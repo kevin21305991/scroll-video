@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Video</title>
+  <style>
+    *,*::before,*::after{
+      box-sizing: border-box;
+    }
+    body{
+      margin: 0;
+      padding: 0;
+    }
+    .banner{
+      position: relative;
+      width: 100%;
+      height: 100vh;
+    }
+    .banner video{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      /* transition: opacity 0.3s; */
+    }
+    .banner video.show{
+      opacity: 1;
+    }
+    .banner video.reverse{
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <video class="banner-video normal show" muted playsinline>
+      <source src="./trading-tools-banner.mp4">
+    </video>
+    <video class="banner-video reverse" muted playsinline>
+      <source src="./trading-tools-banner-reverse.mp4">
+    </video>
+  </div>
+
+  <script>
+    let isScrolling = false; // 防止多次觸發
+    const video = document.querySelector('.banner-video.normal')
+    const reverseVideo = document.querySelector('.banner-video.reverse')
+
+    function scrollPage(direction) {
+        if (isScrolling) return; // 如果正在滾動，阻止操作
+        isScrolling = true;
+
+        if(direction > 0){
+          reverseVideo.pause()
+          reverseVideo.currentTime = 0
+          video.play()
+        }
+        else{
+          video.pause()
+          video.currentTime = 0
+          reverseVideo.play()
+        }
+    }
+
+    window.addEventListener('wheel', (event) => {
+      const direction = event.deltaY > 0 ? 1 : -1; // 判斷滾動方向
+      scrollPage(direction);
+    });
+    video.addEventListener('ended',()=>{
+      reverseVideo.classList.add('show')
+      isScrolling = false;
+    })
+    reverseVideo.addEventListener('ended',()=>{
+      reverseVideo.classList.remove('show')
+      isScrolling = false;
+    })
+  </script>
+</body>
+</html>
